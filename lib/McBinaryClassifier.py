@@ -11,7 +11,11 @@ class McBinaryClassifier(BinaryClassifier):
 
     def InitWV (self):
         ClsNum = max (self.Classes) + 1
-        self.W = np.array([0] * len(self.Features[0]) * ClsNum)
+        W = np.array([0] * len(self.Features[0]) * ClsNum)
+        return W
+
+    def BinaryClass(self, Labels):
+        return Labels
 
     def Predict (self, x):
         self.Fxy = {}

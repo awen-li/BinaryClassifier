@@ -8,6 +8,8 @@ from lib.McBinaryClassifier import McBinaryClassifier
 class PA(BinaryClassifier):
     def __init__(self, Features, Labels,   Iteration):
         super(PA, self).__init__(Features, Labels, Iteration)
+        self.Labels = self.BinaryClass (Labels)
+        self.Name = "PA"
 
     def CalLearnRate(self, x, y):
         return (1 - y * np.dot(self.W, x)) / (np.square(np.linalg.norm(x)))
@@ -20,6 +22,7 @@ class PA(BinaryClassifier):
 class McPA(McBinaryClassifier):
     def __init__(self, Features, Labels,   Iteration):
         super(McPA, self).__init__(Features, Labels, Iteration)
+        self.Name = "Multi-Class PA"
 
     def CalLearnRate(self, y, Pred):
         Factor = 1 - (np.dot(self.W, np.array(self.Fxy[y])) - np.dot(self.W, np.array(self.Fxy[Pred])))

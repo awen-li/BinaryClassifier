@@ -2,7 +2,7 @@
 
 import sys, getopt
 import pandas as pd
-from lib.Perceptron import Perceptron, McPerceptron
+from lib.Perceptron import Perceptron, AveragePerceptron, McPerceptron, McAveragePerceptron
 from lib.PA import PA, McPA
 
 
@@ -15,33 +15,63 @@ def LoadData (FileName):
 
     return Features, Labels
 
-def RunPerceptron(Features, Labels):
+def RunPerceptron(Features, Labels, TestFeatures, TestLabels):
     print("RunPerceptron")
-    Clf = Perceptron (Features, Labels, 1);
+    Clf = Perceptron (Features, Labels, 50);
     Clf.Fit ()
+    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
+    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")
 
-def RunMcPerceptron(Features, Labels):
+    Clf.Test (TestFeatures, TestLabels)
+    Clf.PlotLearnIngCurve ("Test_LearnIngCurve")
+    Clf.PlotAccuracyCurve ("Test_AccuracyCurve")
+
+def RunMcPerceptron(Features, Labels, TestFeatures, TestLabels):
     print("McPerceptron")
-    Clf = McPerceptron (Features, Labels, 1);
+    Clf = McPerceptron (Features, Labels, 50);
     Clf.Fit ()
+    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
+    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")
+
+def RunAveragePerceptron(Features, Labels, TestFeatures, TestLabels):
+    print("AveragePerceptron")
+    Clf = AveragePerceptron (Features, Labels, 50);
+    Clf.Fit ()
+    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
+    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")  
+
+def RunMcAveragePerceptron(Features, Labels, TestFeatures, TestLabels):
+    print("McAveragePerceptron")
+    Clf = McAveragePerceptron (Features, Labels, 50);
+    Clf.Fit ()
+    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
+    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")
 
 
-def RunPA(Features, Labels):
+def RunPA(Features, Labels, TestFeatures, TestLabels):
     print("Passive-Aggressive")
-    Clf = PA (Features, Labels, 1);
+    Clf = PA (Features, Labels, 50);
     Clf.Fit ()
+    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
+    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")
 
-def RunMcPA(Features, Labels):
-    print("Passive-Aggressive")
-    Clf = McPA (Features, Labels, 1);
+def RunMcPA(Features, Labels, TestFeatures, TestLabels):
+    print("McPassive-Aggressive")
+    Clf = McPA (Features, Labels, 50);
     Clf.Fit ()
+    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
+    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")
     
 
-def RunAll(Features, Labels):
-    RunPerceptron (Features, Labels)
-    RunMcPerceptron(Features, Labels)
-    RunPA (Features, Labels)
-    RunMcPA(Features, Labels)
+def RunAll(Features, Labels, TestFeatures, TestLabels):
+    RunPerceptron (Features, Labels, TestFeatures, TestLabels)
+    RunMcPerceptron (Features, Labels, TestFeatures, TestLabels)
+    
+    RunAveragePerceptron (Features, Labels, TestFeatures, TestLabels)
+    RunMcAveragePerceptron (Features, Labels, TestFeatures, TestLabels)
+    
+    RunPA (Features, Labels, TestFeatures, TestLabels)
+    RunMcPA(Features, Labels, TestFeatures, TestLabels)
 
 
 def Help ():
@@ -69,19 +99,20 @@ def main(argv):
             Type = arg;
 
     Features, Labels = LoadData ("train.csv")
+    TestFeatures, TestLabels = LoadData ("fashion-mnist_test.csv")
     #########################################################
     # collect and analysis
     #########################################################
     if (Type == "perceptron"):
-        RunPerceptron (Features, Labels)
-        RunMcPerceptron (Features, Labels)
+        RunPerceptron (Features, Labels, TestFeatures, TestLabels)
+        RunMcPerceptron (Features, Labels, TestFeatures, TestLabels)
             
     elif (Type == "PA"):
         pass
  
     else:
         Help ()
-        RunAll (Features, Labels)
+        RunAll (Features, Labels, TestFeatures, TestLabels)
    
 
 if __name__ == "__main__":
