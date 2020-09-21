@@ -1,1 +1,1 @@
-# Arca
+BinaryClassifier & Multi-class
