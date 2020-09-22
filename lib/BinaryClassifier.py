@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import abc
-import csv
 import numpy as np
 import matplotlib.pyplot as plot
 
@@ -14,7 +13,6 @@ class BinaryClassifier(metaclass=abc.ABCMeta):
         self.TestLabels   = self.BinaryClass (TestLabels)      
         self.Iteration    = Iteration
 
-        self.Classes  = set (Labels)
         self.W        = None
         self.Mistakes = {}
         self.Accuracy = {}
@@ -50,22 +48,26 @@ class BinaryClassifier(metaclass=abc.ABCMeta):
     def PlotLearnIngCurve(self, Mistakes, Type):
         Itrs = list(Mistakes.keys ())
         Mistakes = list(Mistakes.values ())
+        if (len(Itrs) == 0):
+            return
         plot.plot(Itrs, Mistakes, color = 'g', marker='o', linestyle='solid')
         plot.xlabel('Number of iterations')
         plot.ylabel('Number of mistakes')
         plot.title("Learning curve of %s" %(self.Name))
-        plot.savefig(self.Name + "-" + Type)
+        plot.savefig("result/" + self.Name + "-" + Type)
         #plot.show()
         plot.close()
 
     def PlotAccuracyCurve(self, Accuracy, Type):
         Itrs = list(Accuracy.keys ())
         Accuracy = list(Accuracy.values ())
+        if (len(Itrs) == 0):
+            return
         plot.plot(Itrs, Accuracy, color = 'r', marker='o', linestyle='solid')
         plot.xlabel('Number of iterations')
         plot.ylabel('Accuracy (%)')
         plot.title("Accuracy curve of %s" %(self.Name))
-        plot.savefig(self.Name + "-" + Type)
+        plot.savefig("result/" + self.Name + "-" + Type)
         #plot.show()
         plot.close()
 
@@ -83,7 +85,7 @@ class BinaryClassifier(metaclass=abc.ABCMeta):
         plot.xlabel('Number of training examples')
         plot.ylabel('Testing Accuracy (%)')
         plot.title("Accuracy curve of %s" %(self.Name))
-        plot.savefig(self.Name + "-generallearning-" + Type)
+        plot.savefig("result/" + self.Name + "-generallearning-" + Type)
         #plot.show()
         plot.close()
         
@@ -118,19 +120,22 @@ class BinaryClassifier(metaclass=abc.ABCMeta):
             Pred = self.Predict (x)
             if (Pred != y):
                 Mist = Mist + 1
-                w = self.UpdateWeight (x, y, Pred)
+                self.UpdateWeight (x, y, Pred)
             
         self.Mistakes[Itr] = Mist
         self.Accuracy[Itr] = (1 - Mist/ExampleNum)*100
 
-    def Fit (self):
+    def Fit (self, IsTest=True):
         self.W = self.InitWV ()
         ExampleNum = self.Features.shape[0]
         
         for Itr in range (1, self.Iteration+1):
-            print ("\riteration: %d" %Itr, end = "")
+            print ("\r%s iteration: %d%-64s" %(self.Name, Itr, ""), end = "")
             self.Train (ExampleNum, Itr)
-            self.Test (Itr)
+            if (IsTest == True):
+                self.Test (Itr)
+        print ("\r\n")
+        return
 
     def GeneralLearning (self, Start, StepSize, Iteration):
         self.W = self.InitWV ()
@@ -139,6 +144,7 @@ class BinaryClassifier(metaclass=abc.ABCMeta):
         Itr = 0
         StepNum = StepSize * (Iteration+1)
         for ExampleNum in range (Start, StepNum, StepSize):
+            print ("\r%s ExampleNum: %d%-64s" %(self.Name, ExampleNum, ""), end = "")
             if (ExampleNum > TotalExampleNum):
                 break
             
@@ -147,6 +153,7 @@ class BinaryClassifier(metaclass=abc.ABCMeta):
             self.ExampleNums [Itr] = ExampleNum
             
             Itr = Itr + 1
+        print ("\r\n")
         return
                     
         
