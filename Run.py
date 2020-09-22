@@ -5,7 +5,6 @@ import pandas as pd
 from lib.Perceptron import Perceptron, AveragePerceptron, McPerceptron, McAveragePerceptron
 from lib.PA import PA, McPA
 
-
 def LoadData (FileName):
     RawData = pd.read_csv("data/" + FileName, header=0)
     Data = RawData.values
@@ -15,104 +14,85 @@ def LoadData (FileName):
 
     return Features, Labels
 
-def RunPerceptron(Features, Labels, TestFeatures, TestLabels):
-    print("RunPerceptron")
-    Clf = Perceptron (Features, Labels, 50);
+def Train (Clf, Tag):
     Clf.Fit ()
-    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
-    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")
+    Clf.Plot(Tag)
 
-    Clf.Test (TestFeatures, TestLabels)
-    Clf.PlotLearnIngCurve ("Test_LearnIngCurve")
-    Clf.PlotAccuracyCurve ("Test_AccuracyCurve")
-
-def RunMcPerceptron(Features, Labels, TestFeatures, TestLabels):
-    print("McPerceptron")
-    Clf = McPerceptron (Features, Labels, 50);
-    Clf.Fit ()
-    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
-    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")
-
-def RunAveragePerceptron(Features, Labels, TestFeatures, TestLabels):
-    print("AveragePerceptron")
-    Clf = AveragePerceptron (Features, Labels, 50);
-    Clf.Fit ()
-    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
-    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")  
-
-def RunMcAveragePerceptron(Features, Labels, TestFeatures, TestLabels):
-    print("McAveragePerceptron")
-    Clf = McAveragePerceptron (Features, Labels, 50);
-    Clf.Fit ()
-    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
-    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")
-
-
-def RunPA(Features, Labels, TestFeatures, TestLabels):
-    print("Passive-Aggressive")
-    Clf = PA (Features, Labels, 50);
-    Clf.Fit ()
-    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
-    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")
-
-def RunMcPA(Features, Labels, TestFeatures, TestLabels):
-    print("McPassive-Aggressive")
-    Clf = McPA (Features, Labels, 50);
-    Clf.Fit ()
-    Clf.PlotLearnIngCurve ("Train_LearnIngCurve")
-    Clf.PlotAccuracyCurve ("Train_AccuracyCurve")
+def GeneralLearning (Clf, Tag):
+    Clf.GeneralLearning (100, 100, 20)
+    Clf.PlotGeneralCurve(Tag)
     
+def RunQuestion_5_1a(Features, Labels, TestFeatures, TestLabels):
+    print ("\r\nQuestion5.1a: Compute learning curve for both Perceptron and PA")    
+    Clf = Perceptron (Features, Labels, TestFeatures, TestLabels, 50)
+    Train (Clf, "5_1a")
+    Clf = PA (Features, Labels, TestFeatures, TestLabels, 50)
+    Train (Clf, "5_1a")
 
-def RunAll(Features, Labels, TestFeatures, TestLabels):
-    RunPerceptron (Features, Labels, TestFeatures, TestLabels)
-    RunMcPerceptron (Features, Labels, TestFeatures, TestLabels)
-    
-    RunAveragePerceptron (Features, Labels, TestFeatures, TestLabels)
-    RunMcAveragePerceptron (Features, Labels, TestFeatures, TestLabels)
-    
-    RunPA (Features, Labels, TestFeatures, TestLabels)
-    RunMcPA(Features, Labels, TestFeatures, TestLabels)
+def RunQuestion_5_1b(Features, Labels, TestFeatures, TestLabels):
+    print ("\r\nQuestion5.1b: Compute accuracy of both Perceptron and PA")   
+    Clf = Perceptron (Features, Labels, TestFeatures, TestLabels, 20)
+    Train (Clf, "5_1b")   
+    Clf = PA (Features, Labels, TestFeatures, TestLabels, 20)
+    Train (Clf, "5_1b")
 
+def RunQuestion_5_1c(Features, Labels, TestFeatures, TestLabels):
+    print ("\r\nQuestion5.1c: Compute accuracy of Average Perceptron")
+    Clf = AveragePerceptron (Features, Labels, TestFeatures, TestLabels, 20);
+    Train (Clf, "5_1c")
 
-def Help ():
-    print ("--------------------------------------------------");
-    print ("Run.py -t perceptron ---  run perceptron algorithm");
-    print ("Run.py -t PA         ---  run PA algorithm");
-    print ("--------------------------------------------------");
+def RunQuestion_5_1d(Features, Labels, TestFeatures, TestLabels):
+    print ("\r\nQuestion5.1d: Compute the general learning curve")
+    Clf = Perceptron (Features, Labels, TestFeatures, TestLabels, 20)
+    GeneralLearning (Clf, "5_1d")
+    Clf = PA (Features, Labels, TestFeatures, TestLabels, 20)
+    GeneralLearning (Clf, "5_1d")
+    Clf = AveragePerceptron (Features, Labels, TestFeatures, TestLabels, 20);
+    GeneralLearning (Clf, "5_1d")
+
+def RunQuestion_5_2a(Features, Labels, TestFeatures, TestLabels):
+    print ("\r\nQuestion5.2a: Compute learning curve for both Multi-class Perceptron and PA")    
+    Clf = McPerceptron (Features, Labels, TestFeatures, TestLabels, 50)
+    Train (Clf, "5_2a")
+    Clf = McPA (Features, Labels, TestFeatures, TestLabels, 50)
+    Train (Clf, "5_2a")
+
+def RunQuestion_5_2b(Features, Labels, TestFeatures, TestLabels):
+    print ("\r\nQuestion5.2b: Compute accuracy of both Multi-class Perceptron and PA")   
+    Clf = Perceptron (Features, Labels, TestFeatures, TestLabels, 20)
+    Train (Clf, "5_2b")   
+    Clf = PA (Features, Labels, TestFeatures, TestLabels, 20)
+    Train (Clf, "5_2b")
+
+def RunQuestion_5_2c(Features, Labels, TestFeatures, TestLabels):
+    print ("\r\nQuestion5.2c: Compute accuracy of Multi-class Average Perceptron")
+    Clf = McAveragePerceptron (Features, Labels, TestFeatures, TestLabels, 20);
+    Train (Clf, "5_2c")
+
+def RunQuestion_5_2d(Features, Labels, TestFeatures, TestLabels):
+    print ("\r\nQuestion5.2d: Compute the general learning curve of Multi-class algorighms")
+    Clf = McPerceptron (Features, Labels, TestFeatures, TestLabels, 20)
+    GeneralLearning (Clf, "5_2d")
+    Clf = McPA (Features, Labels, TestFeatures, TestLabels, 20)
+    GeneralLearning (Clf, "5_2d")
+    Clf = McAveragePerceptron (Features, Labels, TestFeatures, TestLabels, 20);
+    GeneralLearning (Clf, "5_2d")
 
 def main(argv):
-    Type = ''
-
-    #########################################################
-    # get Type
-    #########################################################
-    try:
-        opts, args = getopt.getopt(argv,"ht:",["type="])
-    except getopt.GetoptError:
-        print ("Run.py -t <type>")
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            Help ()
-            sys.exit()
-        elif opt in ("-t", "--type"):
-            Type = arg;
-
-    Features, Labels = LoadData ("train.csv")
+    print ("Loading training data...")
+    Features, Labels = LoadData ("fashion-mnist_train.csv")
+    print ("Loading testing data...")
     TestFeatures, TestLabels = LoadData ("fashion-mnist_test.csv")
-    #########################################################
-    # collect and analysis
-    #########################################################
-    if (Type == "perceptron"):
-        RunPerceptron (Features, Labels, TestFeatures, TestLabels)
-        RunMcPerceptron (Features, Labels, TestFeatures, TestLabels)
-            
-    elif (Type == "PA"):
-        pass
- 
-    else:
-        Help ()
-        RunAll (Features, Labels, TestFeatures, TestLabels)
+
+    RunQuestion_5_1a(Features, Labels, TestFeatures, TestLabels)
+    RunQuestion_5_1b(Features, Labels, TestFeatures, TestLabels)
+    RunQuestion_5_1c(Features, Labels, TestFeatures, TestLabels)
+    RunQuestion_5_1d(Features, Labels, TestFeatures, TestLabels)
+
+    RunQuestion_5_2a(Features, Labels, TestFeatures, TestLabels)
+    RunQuestion_5_2b(Features, Labels, TestFeatures, TestLabels)
+    RunQuestion_5_2c(Features, Labels, TestFeatures, TestLabels)
+    RunQuestion_5_2d(Features, Labels, TestFeatures, TestLabels)
    
 
 if __name__ == "__main__":

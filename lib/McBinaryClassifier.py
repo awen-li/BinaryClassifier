@@ -5,8 +5,8 @@ from lib.BinaryClassifier import BinaryClassifier
 
 
 class McBinaryClassifier(BinaryClassifier):
-    def __init__(self, Features, Labels,   Iteration):
-        super(McBinaryClassifier, self).__init__(Features, Labels, Iteration)
+    def __init__(self, Features, Labels, TestFeatures, TestLabels, Iteration):
+        super(McBinaryClassifier, self).__init__(Features, Labels, TestFeatures, TestLabels, Iteration)
         self.Fxy = {}
 
     def InitWV (self):

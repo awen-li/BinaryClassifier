@@ -6,16 +6,23 @@ import numpy as np
 import matplotlib.pyplot as plot
 
 class BinaryClassifier(metaclass=abc.ABCMeta):
-    def __init__(self, Features, Labels, Iteration):
+    def __init__(self, Features, Labels, TestFeatures, TestLabels, Iteration):
         
-        self.Features  = Features
-        self.Labels    = Labels
-        self.Iteration = Iteration
+        self.Features     = Features
+        self.Labels       = self.BinaryClass (Labels)      
+        self.TestFeatures = TestFeatures
+        self.TestLabels   = self.BinaryClass (TestLabels)      
+        self.Iteration    = Iteration
 
-        self.Classes = set (self.Labels)
-        self.W = None
+        self.Classes  = set (Labels)
+        self.W        = None
         self.Mistakes = {}
         self.Accuracy = {}
+        self.ExampleNums = {}
+        
+        self.TestMistakes = {}
+        self.TestAccuracy = {}
+        self.TestExampleNums = {}
 
         self.Name = "BinaryClassifier"
 
@@ -40,76 +47,107 @@ class BinaryClassifier(metaclass=abc.ABCMeta):
                 BinLabels.append(-1)
         return BinLabels
 
-    def PlotLearnIngCurve(self, Type):
-        Itrs = list(self.Mistakes.keys ())
-        Mistakes = list(self.Mistakes.values ())
+    def PlotLearnIngCurve(self, Mistakes, Type):
+        Itrs = list(Mistakes.keys ())
+        Mistakes = list(Mistakes.values ())
         plot.plot(Itrs, Mistakes, color = 'g', marker='o', linestyle='solid')
         plot.xlabel('Number of iterations')
         plot.ylabel('Number of mistakes')
         plot.title("Learning curve of %s" %(self.Name))
         plot.savefig(self.Name + "-" + Type)
-        plot.show()
+        #plot.show()
         plot.close()
 
-    def PlotAccuracyCurve(self, Type):
-        Itrs = list(self.Accuracy.keys ())
-        Accuracy = list(self.Accuracy.values ())
+    def PlotAccuracyCurve(self, Accuracy, Type):
+        Itrs = list(Accuracy.keys ())
+        Accuracy = list(Accuracy.values ())
         plot.plot(Itrs, Accuracy, color = 'r', marker='o', linestyle='solid')
         plot.xlabel('Number of iterations')
         plot.ylabel('Accuracy (%)')
         plot.title("Accuracy curve of %s" %(self.Name))
         plot.savefig(self.Name + "-" + Type)
-        plot.show()
+        #plot.show()
         plot.close()
+
+    def Plot (self, Type):
+        self.PlotLearnIngCurve (self.Mistakes, "Train_LearningCurve-" + Type)
+        self.PlotAccuracyCurve (self.Accuracy, "Train_AccuracyCurve-" + Type)
+        self.PlotLearnIngCurve (self.TestMistakes, "Test_LearningCurve-" + Type)
+        self.PlotAccuracyCurve (self.TestAccuracy, "Test_AccuracyCurve-" + Type)
+
+
+    def PlotGeneralCurve(self, Type):
+        Itrs = list(self.ExampleNums.values ())
+        Accuracy = list(self.TestAccuracy.values ())
+        plot.plot(Itrs, Accuracy, color = 'r', marker='o', linestyle='solid')
+        plot.xlabel('Number of training examples')
+        plot.ylabel('Testing Accuracy (%)')
+        plot.title("Accuracy curve of %s" %(self.Name))
+        plot.savefig(self.Name + "-generallearning-" + Type)
+        #plot.show()
+        plot.close()
+        
         
     @abc.abstractmethod    
     def UpdateWeight (self, x, y, Pred):
         print ("UpdateWeight...")
 
+    def Test (self, Itr):
+        ExampleNum = self.TestFeatures.shape[0]
+        Mist = 0
+        for i in range(ExampleNum):
+            x = np.squeeze(np.asarray(self.TestFeatures[i], dtype=np.float64))
+            x = np.ravel(x)
+            y = self.TestLabels [i]
+                    
+            Pred = self.Predict (x)        
+            if Pred != y:
+                Mist = Mist + 1
+                        
+        self.TestMistakes[Itr] = Mist
+        self.TestAccuracy[Itr] = (1 - Mist/ExampleNum)*100
+        return
+
+    def Train (self, ExampleNum, Itr):
+        Mist = 0
+        for i in range(ExampleNum):
+            x = np.squeeze(np.asarray(self.Features[i], dtype=np.float64))
+            x = np.ravel(x)
+            y = self.Labels[i]
+
+            Pred = self.Predict (x)
+            if (Pred != y):
+                Mist = Mist + 1
+                w = self.UpdateWeight (x, y, Pred)
+            
+        self.Mistakes[Itr] = Mist
+        self.Accuracy[Itr] = (1 - Mist/ExampleNum)*100
+
     def Fit (self):
         self.W = self.InitWV ()
-
         ExampleNum = self.Features.shape[0]
+        
         for Itr in range (1, self.Iteration+1):
-            Mist = 0
-            for i in range(ExampleNum):
-                x = np.squeeze(np.asarray(self.Features[i], dtype=np.float64))
-                x = np.ravel(x)
-                y = self.Labels[i]
-           
-                Pred = self.Predict (x)              
-                if (Pred != y):
-                    Mist = Mist + 1
-                    w = self.UpdateWeight (x, y, Pred)
+            print ("\riteration: %d" %Itr, end = "")
+            self.Train (ExampleNum, Itr)
+            self.Test (Itr)
+
+    def GeneralLearning (self, Start, StepSize, Iteration):
+        self.W = self.InitWV ()
+        TotalExampleNum = self.Features.shape[0]
+
+        Itr = 0
+        StepNum = StepSize * (Iteration+1)
+        for ExampleNum in range (Start, StepNum, StepSize):
+            if (ExampleNum > TotalExampleNum):
+                break
             
-            self.Mistakes[Itr] = Mist
-            self.Accuracy[Itr] = (1 - Mist/ExampleNum)*100
-            #print ("Mistake: %d, Accuracy:%0.2f" %(self.Mistakes[Itr], self.Accuracy[Itr]))
+            self.Train (ExampleNum, Itr)
+            self.Test (Itr)
+            self.ExampleNums [Itr] = ExampleNum
+            
+            Itr = Itr + 1
         return
-
-    def Test (self, Features, Labels):
-        
-        self.Mistakes = {}
-        self.Accuracy = {}
-
-        Labels = self.BinaryClass (Labels)
-        
-        ExampleNum = Features.shape[0]
-        for Itr in range (1, self.Iteration+1):
-            Mist = 0
-            for i in range(ExampleNum):
-                x = np.squeeze(np.asarray(Features[i], dtype=np.float64))
-                x = np.ravel(x)
-                y = Labels [i]
-                
-                Pred = self.Predict (x)        
-                if Pred != y:
-                    Mist = Mist + 1
-                    
-            self.Mistakes[Itr] = Mist
-            self.Accuracy[Itr] = (1 - Mist/ExampleNum)*100
-        return
-
                     
         
 

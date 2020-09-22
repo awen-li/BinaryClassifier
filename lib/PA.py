@@ -6,9 +6,8 @@ from lib.McBinaryClassifier import McBinaryClassifier
 
 #standard Passive Aggressive Algorithm
 class PA(BinaryClassifier):
-    def __init__(self, Features, Labels,   Iteration):
-        super(PA, self).__init__(Features, Labels, Iteration)
-        self.Labels = self.BinaryClass (Labels)
+    def __init__(self, Features, Labels, TestFeatures, TestLabels, Iteration):
+        super(PA, self).__init__(Features, Labels, TestFeatures, TestLabels, Iteration)
         self.Name = "PA"
 
     def CalLearnRate(self, x, y):
@@ -20,8 +19,8 @@ class PA(BinaryClassifier):
  
 #Multi-Class Passive Aggressive Algorithm
 class McPA(McBinaryClassifier):
-    def __init__(self, Features, Labels,   Iteration):
-        super(McPA, self).__init__(Features, Labels, Iteration)
+    def __init__(self, Features, Labels, TestFeatures, TestLabels, Iteration):
+        super(McPA, self).__init__(Features, Labels, TestFeatures, TestLabels, Iteration)
         self.Name = "Multi-Class PA"
 
     def CalLearnRate(self, y, Pred):
