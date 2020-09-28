@@ -20,7 +20,7 @@ def Train (Clf, Tag, IsTest=True):
     Clf.Plot(Tag)
 
 def GeneralLearning (Clf, Tag):
-    Clf.GeneralLearning (100, 100, 20)
+    Clf.GeneralLearning (100, 100, 600)
     Clf.PlotGeneralCurve(Tag)
     
 def RunQuestion_5_1a(Features, Labels, TestFeatures, TestLabels):

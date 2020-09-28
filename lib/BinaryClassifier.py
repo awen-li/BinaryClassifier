@@ -138,18 +138,19 @@ class BinaryClassifier(metaclass=abc.ABCMeta):
         return
 
     def GeneralLearning (self, Start, StepSize, Iteration):
-        self.W = self.InitWV ()
         TotalExampleNum = self.Features.shape[0]
 
         Itr = 0
         StepNum = StepSize * (Iteration+1)
         for ExampleNum in range (Start, StepNum, StepSize):
+            self.W = self.InitWV ()
             print ("\r%s ExampleNum: %d%-64s" %(self.Name, ExampleNum, ""), end = "")
             if (ExampleNum > TotalExampleNum):
                 break
             
-            self.Train (ExampleNum, Itr)
-            self.Test (Itr)
+            for I in range (1, self.Iteration+1):
+                self.Train (ExampleNum, Itr)
+                self.Test (Itr)
             self.ExampleNums [Itr] = ExampleNum
             
             Itr = Itr + 1
